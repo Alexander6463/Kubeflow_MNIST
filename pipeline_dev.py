@@ -1,7 +1,6 @@
 import kfp
 import kfp.components as components
 import kfp.dsl as dsl
-import kubeflow.fairing.utils
 
 from components.download_component import download_dataset
 from components.train_component import train_model
@@ -10,9 +9,9 @@ from components.export_component import export_model
 
 BASE_IMAGE = "drobnov1994/example:kubeflow_tensorflow_v1"
 INPUT_BUCKET = "pipelines-tutorial-data"
-kfserving = components.load_component_from_file("kfserving-component.yaml")
 NAMESPACE = 'default'
-#NAMESPACE = kubeflow.fairing.utils.get_current_k8s_namespace()
+
+kfserving = components.load_component_from_file("kfserving-component.yaml")
 
 
 def train_and_serve(
@@ -23,23 +22,25 @@ def train_and_serve(
         model_version: str):
     downloadOp = components.func_to_container_op(
         download_dataset, base_image=BASE_IMAGE)(input_bucket, dataset_name)
-    #downloadOp.execution_options.caching_strategy.max_cache_staleness = "P0D"
-    trainOp = components.func_to_container_op(train_model,
-                                              base_image=BASE_IMAGE)(downloadOp.output)
-    #trainOp.execution_options.caching_strategy.max_cache_staleness = "P0D"
+    downloadOp.execution_options.caching_strategy.max_cache_staleness = "P0D"
+    trainOp = components.func_to_container_op(
+        train_model, base_image=BASE_IMAGE)(downloadOp.output)
+    trainOp.execution_options.caching_strategy.max_cache_staleness = "P0D"
     evaluateOp = components.func_to_container_op(
         evaluate_model,
         base_image=BASE_IMAGE)(downloadOp.output, trainOp.output)
-    #evaluateOp.execution_options.caching_strategy.max_cache_staleness = "P0D"
-    exportOp = components.func_to_container_op(export_model, base_image=BASE_IMAGE)(
-        trainOp.output, evaluateOp.output, export_bucket, model_name, model_version
-    )
-    #exportOp.execution_options.caching_strategy.max_cache_staleness = "P0D"
+    evaluateOp.execution_options.caching_strategy.max_cache_staleness = "P0D"
+    exportOp = components.func_to_container_op(
+        export_model, base_image=BASE_IMAGE)(
+        trainOp.output, evaluateOp.output,
+        export_bucket, model_name, model_version)
+    exportOp.execution_options.caching_strategy.max_cache_staleness = "P0D"
     kfservingOp = kfserving(
         action="apply",
-        default_model_uri=f"http://minio_service/{export_bucket}/{model_name}",
+        default_model_uri=f"http://minio_service/"
+                          f"{export_bucket}/{model_name}",
         model_name="mnist",
-        namespace = NAMESPACE,
+        namespace=NAMESPACE,
         framework="tensorflow",
         watch_timeout="300",
     )
@@ -53,7 +54,8 @@ def op_transformer(op):
 
 @dsl.pipeline(
     name="End-to-End MNIST Pipeline",
-    description="A sample pipeline to demonstrate multi-step model training,"
+    description="A sample pipeline to demonstrate "
+                "multi-step model training,"
                 "evaluation, export, and serving",
 )
 def mnist_pipeline(input_bucket: str = "pipelines-tutorial-data",

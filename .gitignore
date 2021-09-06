@@ -2,3 +2,9 @@ venv
 pipeline.py
 test.py
 .idea
+error.txt
+pipeline_dev.py.yaml
+requirements.txt
+minio-secret.yaml
+kfserving-component.yaml
+.flake8

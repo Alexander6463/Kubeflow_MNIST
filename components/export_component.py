@@ -1,4 +1,4 @@
-from kfp.components import InputPath, OutputPath
+from kfp.components import InputPath
 
 
 def export_model(

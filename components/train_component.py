@@ -37,7 +37,6 @@ def train_model(data_dir: InputPath(str), model_dir: OutputPath(str)):
         data_dir=f"{data_dir}/datasets",
     )
 
-    # See: https://www.tensorflow.org/datasets/keras_example#build_training_pipeline
     ds_train = ds_train.map(
         normalize_image, num_parallel_calls=tf.data.experimental.AUTOTUNE
     )

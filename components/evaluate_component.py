@@ -4,10 +4,13 @@ from kfp.components import InputPath, OutputPath
 
 
 def evaluate_model(
-    data_dir: InputPath(str), model_dir: InputPath(str), metrics_path: OutputPath(str)
+    data_dir: InputPath(str),
+        model_dir: InputPath(str),
+        metrics_path: OutputPath(str)
 ) -> NamedTuple("EvaluationOutput", [("mlpipeline_metrics", "Metrics")]):
-    """Loads a saved model from file and uses a pre-downloaded dataset for evaluation.
-    Model metrics are persisted to `/mlpipeline-metrics.json` for Kubeflow Pipelines
+    """Loads a saved model from file and uses a pre-downloaded
+    dataset for evaluation. Model metrics are persisted to
+    `/mlpipeline-metrics.json` for Kubeflow Pipelines
     metadata."""
 
     import json
@@ -28,7 +31,6 @@ def evaluate_model(
         data_dir=f"{data_dir}/datasets",
     )
 
-    # See: https://www.tensorflow.org/datasets/keras_example#build_training_pipeline
     ds_test = ds_test.map(
         normalize_image, num_parallel_calls=tf.data.experimental.AUTOTUNE
     )
@@ -41,8 +43,10 @@ def evaluate_model(
 
     metrics = {
         "metrics": [
-            {"name": "loss", "numberValue": str(loss), "format": "PERCENTAGE"},
-            {"name": "accuracy", "numberValue": str(accuracy), "format": "PERCENTAGE"},
+            {"name": "loss", "numberValue": str(loss),
+             "format": "PERCENTAGE"},
+            {"name": "accuracy", "numberValue": str(accuracy),
+             "format": "PERCENTAGE"},
         ]
     }
 
