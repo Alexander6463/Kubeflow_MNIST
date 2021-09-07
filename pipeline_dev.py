@@ -37,7 +37,7 @@ def train_and_serve(
     exportOp.execution_options.caching_strategy.max_cache_staleness = "P0D"
     kfservingOp = kfserving(
         action="apply",
-        default_model_uri=f"http://minio_service/"
+        default_model_uri=f"minio-service://"
                           f"{export_bucket}/{model_name}",
         model_name="mnist",
         namespace=NAMESPACE,
