@@ -1,4 +1,4 @@
-minikube start --cpus 4 --memory 12288
+minikube start
 
 export PIPELINE_VERSION=1.7.0
 kubectl apply -k "github.com/kubeflow/pipelines/manifests/kustomize/cluster-scoped-resources?ref=$PIPELINE_VERSION"

@@ -11,8 +11,6 @@ BASE_IMAGE = "drobnov1994/example:kubeflow_tensorflow_v1"
 INPUT_BUCKET = "pipelines-tutorial-data"
 NAMESPACE = 'default'
 
-kfserving = components.load_component_from_file("kfserving-component.yaml")
-
 
 def train_and_serve(
         input_bucket: str,
@@ -35,15 +33,18 @@ def train_and_serve(
         trainOp.output, evaluateOp.output,
         export_bucket, model_name, model_version)
     exportOp.execution_options.caching_strategy.max_cache_staleness = "P0D"
-    kfservingOp = kfserving(
+    kfserving_op = components.load_component_from_url(
+        'https://raw.githubusercontent.com/kubeflow/pipelines/master/components/kubeflow/kfserving/component.yaml')  # file("kfserving-component.yaml")
+
+    kfservingOp = kfserving_op(
         action="apply",
-        default_model_uri=f"minio-service://"
-                          f"{export_bucket}/{model_name}",
+        model_uri=f"s3://{export_bucket}/{model_name}",
         model_name="mnist",
-        namespace=NAMESPACE,
+        namespace="default",
         framework="tensorflow",
         watch_timeout="300",
     )
+    kfservingOp.after(exportOp)
     kfservingOp.after(exportOp)
 
 

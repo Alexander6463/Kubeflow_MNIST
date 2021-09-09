@@ -1,2 +1,2 @@
 kfp==1.7.2
-kubeflow_fairing==1.0.2
+
