@@ -4,17 +4,4 @@ kubectl port-forward svc/minio-service -n kubeflow 9000:9000
 
 kubectl create clusterrolebinding pipeline-runner-extend --clusterrole cluster-admin --serviceaccount=kubeflow:pipeline-runner
 
-Инструкция по доступу и работе:
-1. Как зайти?
-ssh Firstname_Secondname@epam.com@10.6.221.149
-При доступе используйте ваш epam'овский пароль.
-
-2. Как работать под root'ом?
-sudo su -
-
-3. Какой пакетный менеджер установлен?
-yum
-
-kubectl create clusterrolebinding pipeline-runner-extend --clusterrole cluster-admin --serviceaccount=kubeflow:pipeline-runner
-
 kubectl -n kubeflow logs -f train-and-serve-76nrg-403300486 --all-containers=true
