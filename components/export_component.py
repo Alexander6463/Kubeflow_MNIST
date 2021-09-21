@@ -22,11 +22,11 @@ def export_model(
         for filename in files:
             local_path = os.path.join(root, filename)
             minio_path = os.path.relpath(local_path, model_dir)
-            client.fput_object(export_bucket,
-                               os.path.join(model_name,
-                                            model_version,
-                                            minio_path),
-                               local_path)
+            client.fput_object(
+                export_bucket,
+                os.path.join(model_name, model_version, minio_path),
+                local_path,
+            )
 
     response = client.list_objects(export_bucket, recursive=True)
     print(f"All objects in {export_bucket}:")

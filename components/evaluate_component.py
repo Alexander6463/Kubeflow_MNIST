@@ -4,9 +4,7 @@ from kfp.components import InputPath, OutputPath
 
 
 def evaluate_model(
-    data_dir: InputPath(str),
-        model_dir: InputPath(str),
-        metrics_path: OutputPath(str)
+    data_dir: InputPath(str), model_dir: InputPath(str), metrics_path: OutputPath(str)
 ) -> NamedTuple("EvaluationOutput", [("mlpipeline_metrics", "Metrics")]):
     """Loads a saved model from file and uses a pre-downloaded
     dataset for evaluation. Model metrics are persisted to
@@ -43,10 +41,8 @@ def evaluate_model(
 
     metrics = {
         "metrics": [
-            {"name": "loss", "numberValue": str(loss),
-             "format": "PERCENTAGE"},
-            {"name": "accuracy", "numberValue": str(accuracy),
-             "format": "PERCENTAGE"},
+            {"name": "loss", "numberValue": str(loss), "format": "PERCENTAGE"},
+            {"name": "accuracy", "numberValue": str(accuracy), "format": "PERCENTAGE"},
         ]
     }
 
